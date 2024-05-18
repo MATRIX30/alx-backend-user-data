@@ -8,10 +8,10 @@ from typing import List
 import re
 
 
-def filter_datum(fields: List[str],
-                 redaction: str, message: str, seperator: str) -> str:
-    """function to obfusticate data """
+def filter_datum(fields: List[str], redaction: str, message: str,
+                 seperator: str) -> str:
+    """function to obfusticate data"""
     for field in fields:
-        pattern = re.search(rf"{field}=([^{seperator}]*)", message).group(1)
-        message = re.sub(pattern, redaction, message)
+        message = re.sub(rf"{field}=[^{seperator}]*",
+                         f"{field}={redaction}", message)
     return message
