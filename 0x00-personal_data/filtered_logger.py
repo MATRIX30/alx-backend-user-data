@@ -6,4 +6,12 @@ filter_datum
 
 from typing import List
 import re
-def filter_datum(fields, redaction, message, separator): return re.sub(rf'({"|".join(fields)})=[^{separator}]*', lambda m: m.group().split('=')[0] + '=' + redaction, message)
+
+
+def filter_datum(fields: List[str],
+                 redaction: str, message: str, seperator: str) -> str:
+    """function to obfusticate data """
+    for field in fields:
+        pattern = re.search(rf"{field}=([^{seperator}]*)", message).group(1)
+        message = re.sub(pattern, redaction, message)
+    return message
