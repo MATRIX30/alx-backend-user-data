@@ -18,15 +18,14 @@ class Auth:
         method to return required authentication
         """
         return False
-    
-    
+
     def authorization_header(self, request=None) -> str:
         """
         returns authorized headers
         """
         return None
-    
-    def current_user(self, request=None) -> TypeVar('User'):
+
+    def current_user(self, request=None) -> TypeVar("User"):
         """
         returns current user
         """
