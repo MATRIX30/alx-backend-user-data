@@ -1,46 +1,45 @@
 #!/usr/bin/env python3
-"""Basic authentication module for the API.
+"""Module to handle basic authentication
 """
-import re
-import base64
-import binascii
-from typing import Tuple, TypeVar
 
-from .auth import Auth
-from models.user import User
+
+from api.v1.auth.auth import Auth
+import base64
 
 
 class BasicAuth(Auth):
-    """Basic authentication class.
     """
-    def extract_base64_authorization_header(
-            self,
-            authorization_header: str) -> str:
-        """Extracts the Base64 part of the Authorization header
-        for a Basic Authentication.
-        """
-        if type(authorization_header) == str:
-            pattern = r'Basic (?P<token>.+)'
-            field_match = re.fullmatch(pattern, authorization_header.strip())
-            if field_match is not None:
-                return field_match.group('token')
-        return None
+    class to handle basic authentication
+    """
+
+    def extract_base64_authorization_header(self,
+                                            authorization_header: str) -> str:
+        """extracts the base64 part of request header authorization string"""
+
+        # request_data =request.headers["Authorization"]
+        if authorization_header is None:
+            return None
+        if not (type(authorization_header) == str):
+            return None
+        if not (authorization_header.startswith("Basic ")):
+            return None
+        return authorization_header.split(" ")[1]
 
     def decode_base64_authorization_header(
-            self,
-            base64_authorization_header: str,
-            ) -> str:
-        """Decodes a base64-encoded authorization header.
-        """
-        if type(base64_authorization_header) == str:
-            try:
-                res = base64.b64decode(
-                    base64_authorization_header,
-                    validate=True,
-                )
-                return res.decode('utf-8')
-            except (binascii.Error, UnicodeDecodeError):
-                return None
+        self, base64_authorization_header: str
+    ) -> str:
+        """method to decode base64 encoding"""
+        if base64_authorization_header is None:
+            return None
+        if type(base64_authorization_header) != str:
+            return None
+        try:
+            decoded_base64_header = base64.b64decode(
+                base64_authorization_header)
+            decoded_str_msg = decoded_base64_header.decode("utf-8")
+            return decoded_str_msg
+        except Exception:
+            return None
 
     def extract_user_credentials(
             self,
@@ -79,22 +78,10 @@ class BasicAuth(Auth):
         return None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """Retrieves the User instance for a request.
-
-        Args:
-            request (:obj:`Request`, optional): The request object. Defaults
-            to None.
-
-        Returns:
-            User: The User instance based on the request.
+        """Retrieves the user from a request.
         """
-        # Get the authorization header from the request
         auth_header = self.authorization_header(request)
-        # Extract the Base64 encoded string from the authorization header
-        b64_auth_header = self.extract_base64_authorization_header(auth_header)
-        # Decode the Base64 encoded string
-        dec_header = self.decode_base64_authorization_header(b64_auth_header)
-        # Extract the user email and password from the decoded Base64 string
-        user_email, user_pwd = self.extract_user_credentials(dec_header)
-        # Return the User instance based on the user email and password
-        return self.user_object_from_credentials(user_email, user_pwd)
+        b64_auth_token = self.extract_base64_authorization_header(auth_header)
+        auth_token = self.decode_base64_authorization_header(b64_auth_token)
+        email, password = self.extract_user_credentials(auth_token)
+        return self.user_object_from_credentials(email, password)
