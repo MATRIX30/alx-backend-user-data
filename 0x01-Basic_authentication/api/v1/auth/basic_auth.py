@@ -6,6 +6,7 @@
 from api.v1.auth.auth import Auth
 from typing import Tuple, TypeVar
 import base64
+import re
 
 
 class BasicAuth(Auth):
