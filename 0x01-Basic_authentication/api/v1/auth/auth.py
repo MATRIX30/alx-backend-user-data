@@ -17,6 +17,14 @@ class Auth:
         """
         method to return required authentication
         """
+        if path is None:
+            return True
+        if not path.endswith("/"):
+            path = path + "/"
+        if excluded_paths is None or excluded_paths == []:
+            return True
+        if path not in excluded_paths:
+            return True
         return False
 
     def authorization_header(self, request=None) -> str:
