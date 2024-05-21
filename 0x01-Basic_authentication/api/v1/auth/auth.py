@@ -1,43 +1,37 @@
 #!/usr/bin/env python3
+"""Authentication module.
 """
-Module to handle authentication
-"""
-
-
 from flask import request
 from typing import List, TypeVar
+import fnmatch
 
 
 class Auth:
+    """Authentication class.
     """
-    class to handle API authentications
-    """
-
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """
-        method to return required authentication
+        """ Method to check if auth is required.
         """
         if path is None:
             return True
-        if not path.endswith("/"):
-            path = path + "/"
-        if excluded_paths is None or excluded_paths == []:
+
+        if excluded_paths is None or not excluded_paths:
             return True
-        if path not in excluded_paths:
-            return True
-        return False
+
+        for excluded_path in excluded_paths:
+            if fnmatch.fnmatch(path, excluded_path):
+                return False
+
+        return True
 
     def authorization_header(self, request=None) -> str:
+        """ Method to get authorization header.
         """
-        returns authorized headers
-        """
-        if request is None:
-            return None
-        if "Authorization" not in request.headers:
-            return None
-        return request.headers["Authorization"]
+        if request is not None:
+            return request.headers.get('Authorization', None)
+        return None
 
-    def current_user(self, request=None) -> TypeVar("User"):
+    def current_user(self, request=None) -> TypeVar('User'):
+        """ Method to get user from request.
         """
-        returns current user
-        """
+        return None
