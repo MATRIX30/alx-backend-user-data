@@ -43,10 +43,9 @@ class DB:
             hashed_password=hashed_password
         )
         try:
-            session = self._session
-            session.add(new_user)
-            session.commit()
+            self._session.add(new_user)
+            self._session.commit()
         except Exception:
-            session.rollback()
+            self._session.rollback()
             new_user = None
         return new_user
