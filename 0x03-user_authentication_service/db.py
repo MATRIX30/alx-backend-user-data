@@ -15,7 +15,7 @@ class DB:
 
     def __init__(self) -> None:
         """Initialize a new DB instance"""
-        self._engine = create_engine("sqlite:///a.db")
+        self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
@@ -28,24 +28,21 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password) -> TypeVar('User'):
+def add_user(self, email: str, hashed_password: str) -> User:
+        """ Creates new User instance and
+            saves them to the database.
+            Args:
+                - email
+                - hashed_password
+            Return:
+                - new User object
         """
-        Adds a new user to the database.
-        Args:
-            email: The email address of the user.
-            hashed_password: The hashed password of the user.
-
-        Returns:
-            A User object representing the newly added user.
-        """
-        new_user = User(
-            email=email,
-            hashed_password=hashed_password
-        )
+        session = self._session
         try:
-            self._session.add(new_user)
-            self._session.commit()
+            new_user = User(email=email, hashed_password=hashed_password)
+            session.add(new_user)
+            session.commit()
         except Exception:
-            self._session.rollback()
+            session.rollback()
             new_user = None
         return new_user
