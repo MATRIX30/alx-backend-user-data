@@ -38,14 +38,12 @@ class DB:
         Returns:
             A User object representing the newly added user.
         """
-        new_user = User(
-            email=email,
-            hashed_password=hashed_password
-        )
+        new_user = User(email=email, hashed_password=hashed_password)
         try:
             self._session.add(new_user)
             self._session.commit()
-        except Exception:
+        except Exception as e:
+            print(f"Error adding user to database: {e}")
             self._session.rollback()
-            new_user = None
+            raise
         return new_user
