@@ -39,11 +39,8 @@ class DB:
             A User object representing the newly added user.
         """
         session = self._session
+        new_user = User(email=email, hashed_password=hashed_password)
         try:
-            new_user = User(
-                email=email,
-                hashed_password=hashed_password
-                )
             session.add(new_user)
             session.commit()
         except Exception as e:
