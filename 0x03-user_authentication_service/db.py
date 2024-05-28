@@ -40,7 +40,10 @@ class DB:
         """
         session = self._session
         try:
-            new_user = User(email=email, hashed_password=hashed_password)
+            new_user = User(
+                email=email,
+                hashed_password=hashed_password
+                )
             session.add(new_user)
             session.commit()
         except Exception as e:
