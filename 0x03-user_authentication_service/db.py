@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.exc import NoResultFound, InvalidRequestError
 
 from user import Base, User
 from typing import TypeVar
@@ -48,3 +49,13 @@ class DB:
             session.rollback()
             return
         return new_user
+
+    def find_user_by(self, **kwargs) -> User:
+        """method to find user based in kwargs"""
+        if "email" not in kwargs:
+            raise InvalidRequestError
+        found_user = self._session.query(User).filter_by(
+            email=kwargs.get('email')).first()
+        if found_user is None:
+            raise NoResultFound
+        return found_user
