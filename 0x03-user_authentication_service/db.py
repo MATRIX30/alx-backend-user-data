@@ -42,9 +42,11 @@ class DB:
             email=email,
             hashed_password=hashed_password
         )
-        if new_user is None:
-            return None
-        session = self._session
-        session.add(new_user)
-        session.commit()
+        try:
+            session = self._session
+            session.add(new_user)
+            session.commit()
+        except Exception:
+            session.rollback()
+            new_user = None
         return new_user
