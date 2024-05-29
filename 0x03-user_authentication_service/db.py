@@ -52,11 +52,32 @@ class DB:
         return new_user
 
     def find_user_by(self, **kwargs) -> User:
-        """method to find user based in kwargs"""
-        if "email" not in kwargs:
-            raise InvalidRequestError
-        found_user = self._session.query(User).filter_by(
-            email=kwargs.get('email')).first()
-        if found_user is None:
-            raise NoResultFound
-        return found_user
+        """method to find user based in kwargs
+        Args:
+             kwargs{dic}: list of keyword arguments
+        Return:
+             User: whose attributes match the kwargs
+        """
+        # found_user = self._session.query(User).filter_by(
+        #    email=kwargs.get('email')).first()
+        try:
+            found_user = self._session.query(User).filter_by(**kwargs).one()
+            return found_user
+        except NoResultFound:
+            raise NoResultFound("No Item Found")
+        except InvalidRequestError:
+            raise InvalidRequestError("search term mismatch")
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """method to update user information with user_id
+        Args:
+             user_id(int): user id of the user to update
+        Returns:
+             None
+        """
+        user = self.find_user_by()
+        user_attrib = user.__dict__
+        for k, v in user_attrib:
+            if k not in kwargs:
+                raise ValueError("attribute doesn't match")
+            setattr(user, k, v)
