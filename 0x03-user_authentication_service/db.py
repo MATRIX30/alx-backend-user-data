@@ -75,9 +75,11 @@ class DB:
         Returns:
              None
         """
-        user = self.find_user_by()
-        user_attrib = user.__dict__
-        for k, v in user_attrib:
-            if k not in kwargs:
+        user = self.find_user_by(id=user_id)
+        user_attrib = user.__dict__.copy()
+        del user_attrib['_sa_instance_state']
+        for k, v in kwargs.items():
+            if k not in user_attrib:
                 raise ValueError("attribute doesn't match")
             setattr(user, k, v)
+        return None
