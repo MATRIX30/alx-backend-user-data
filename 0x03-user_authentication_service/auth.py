@@ -44,13 +44,14 @@ class Auth:
         Returns:
             User: the user with the above information registered
         """
-        if email is None or password is None:
-            return None
+        if self._db.find_user_by(email=email) is not None:
+            raise ValueError(f"User {email} already exists")
 
-        try:
-            self._db.find_user_by(email=email)
-        except NoResultFound:
-            hashed_password = _hash_password(password)
-            user = self._db.add_user(email, hashed_password)
-            return user
-        raise ValueError(f"User {email} already exists")
+        # Hash the password
+        hashed_password = self._hash_password(password)
+
+        # Create a new user
+        new_user = self._db.add_user(email, hashed_password)
+
+        # Return the new user object
+        return new_user
