@@ -48,7 +48,7 @@ class Auth:
             return None
 
         try:
-            search_user = self._db.find_user_by(email=email)
+            self._db.find_user_by(email=email)
         except NoResultFound:
             hashed_password = _hash_password(password)
             user = self._db.add_user(email, hashed_password)
