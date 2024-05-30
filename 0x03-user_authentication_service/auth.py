@@ -56,3 +56,4 @@ class Auth:
 
         if search_user is not None:
             raise ValueError("User {} already exists".format(email))
+        return None
