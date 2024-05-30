@@ -53,7 +53,4 @@ class Auth:
             hashed_password = _hash_password(password)
             user = self._db.add_user(email, hashed_password)
             return user
-
-        if search_user is not None:
-            raise ValueError("User {} already exists".format(email))
-        return None
+        raise ValueError("User {} already exists".format(email))
