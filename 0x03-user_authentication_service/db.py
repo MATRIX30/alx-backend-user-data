@@ -57,6 +57,7 @@ class DB:
              kwargs{dic}: list of keyword arguments
         Return:
              User: whose attributes match the kwargs
+                    or None otherwise with exception raised
         """
         # found_user = self._session.query(User).filter_by(
         #    email=kwargs.get('email')).first()
