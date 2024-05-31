@@ -159,7 +159,8 @@ class Auth:
         self._db.update_user(user_id, session_id=None)
 
     def get_reset_password_token(self, email: str) -> str:
-        """Generates a password reset token for a user.
+        """Generates a password reset token for a user. 
+        jow
 
         Args:
             email (str): A string representing the email address of the user to
