@@ -83,7 +83,7 @@ class Auth:
         except Exception:
             return False
 
-    def create_session(self, email: str):
+    def create_session(self, email: str) -> str:
         """
         creates a session based on the users email
         Args:
