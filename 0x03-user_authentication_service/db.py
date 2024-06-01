@@ -57,7 +57,8 @@ class DB:
              kwargs{dic}: list of keyword arguments
         Return:
              User: whose attributes match the kwargs
-                    or None otherwise with exception raised
+                    or None otherwise NoResultFound
+                     or InvalidRequestError exception is raised
         """
         # found_user = self._session.query(User).filter_by(
         #    email=kwargs.get('email')).first()
@@ -83,4 +84,5 @@ class DB:
             if k not in user_attrib:
                 raise ValueError("attribute doesn't match")
             setattr(user, k, v)
+        self._session.commit()
         return None
