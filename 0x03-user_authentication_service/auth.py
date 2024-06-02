@@ -1,87 +1,54 @@
 #!/usr/bin/env python3
-"""
-Module to handle user authentication
-"""
+"""Authentication module"""
 import bcrypt
 from db import DB
-from sqlalchemy.orm.exc import NoResultFound
 from user import User
+from sqlalchemy.orm.exc import NoResultFound
 import uuid
+from typing import Union
 
 
 def _hash_password(password: str) -> bytes:
-    """
-    hashes a string password
-    Args:
-        password(str): string password to be hashed
-    Returns:
-        hashed_password(bytes): the hashed password hashed_password
-    """
-    if type(password) != str:
-        return None
-    encoded_password = password.encode("utf-8")
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(encoded_password, salt)
-    return hashed_password
+    """Hash a password using bcrypt module"""
+    password = password.encode('utf-8')
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+    return hashed
 
 
 def _generate_uuid() -> str:
-    """
-    generates a new string UUID
-    """
+    """Generate an ID using the uuid module"""
     return str(uuid.uuid4())
 
 
 class Auth:
-    """Auth class to interact with the authentication database."""
+    """Auth class to interact with the authentication database.
+    """
 
     def __init__(self):
+        """Initialize the class"""
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> User:
-        """
-        method to register a new user to the database
-            Args:
-                email(str): users email
-                password(str): users password
-            Returns:
-                User: a newly registered user
-        """
-        if type(email) != str or type(password) != str:
-            return None
-        if len(email) <= 0 or len(password) <= 0:
-            return None
-
+        """Register a new user in the DB"""
         try:
-            self._db.find_user_by(email=email)
-            raise ValueError(f"User {email} already exists")
+            user = self._db.find_user_by(email=email)
+            if user:
+                raise ValueError("User {} already exists".format(email))
         except NoResultFound:
             hashed_password = _hash_password(password).decode('utf-8')
-            new_user = User()
-            self._db.add_user(email, hashed_password)
+            new_user = self._db.add_user(email, hashed_password)
             return new_user
 
     def valid_login(self, email: str, password: str) -> bool:
-        """
-        checks if a login is valid or not
-        Args:
-            email(str): users email
-            password(str): users password
-        Returns:
-                bool: True if password is correct and False otherwise
-        """
-        if type(email) != str or type(password) != str:
-            return False
-        if len(email) == 0 or len(password) == 0:
-            return False
+        """Validates a user's login credentials"""
         try:
             user = self._db.find_user_by(email=email)
-            if bcrypt.checkpw(password.encode("utf-8"), user.hashed_password):
-                return True
-            else:
-                return False
-        except Exception:
+            hashed_password = user.hashed_password.encode('utf-8')
+            password = password.encode('utf-8')
+            return bcrypt.checkpw(password, hashed_password)
+        except NoResultFound:
             return False
+
 
     def create_session(self, email: str) -> str:
         """
