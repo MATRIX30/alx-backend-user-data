@@ -47,10 +47,10 @@ class Auth:
             Returns:
                 User: a newly registered user
         """
-        # if type(email) != str or type(password) != str:
-        #     return None
-        # if len(email) <= 0 or len(password) <= 0:
-        #     return None
+        if type(email) != str or type(password) != str:
+            return None
+        if len(email) <= 0 or len(password) <= 0:
+            return None
 
         try:
             user = self._db.find_user_by(email=email)
@@ -58,8 +58,7 @@ class Auth:
                 raise ValueError(f"User {email} already exists")
         except NoResultFound:
             hashed_password = _hash_password(password).decode('utf-8')
-            new_user = User()
-            self._db.add_user(email, hashed_password)
+            new_user = self._db.add_user(email, hashed_password)
             return new_user
 
     def valid_login(self, email: str, password: str) -> bool:
